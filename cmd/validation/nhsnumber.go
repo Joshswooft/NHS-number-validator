@@ -1,4 +1,4 @@
-package nhsnumbervalidator
+package validation
 
 import (
 	"errors"
