@@ -60,10 +60,46 @@ func Validate(id string) error {
 	return nil
 }
 
+// GetGender from a chi number id
+// evaluates the 9th digit and if even => Female, odd => Male
 func GetGender(id string) (utils.Gender, error) {
-	return utils.Male, nil
+	if len(id) != 10 {
+		return utils.Female, ErrChiLength
+	}
+	_, err := strconv.Atoi(id)
+
+	if err != nil {
+		return utils.Female, ErrChiNonDigits
+	}
+
+	digit := rune(id[8] - '0')
+
+	if digit%2 == 0 {
+		return utils.Female, nil
+	} else {
+		return utils.Male, nil
+	}
+
 }
 
-func GetDateOfBirth(id string) (string, error) {
-	return "dd/mm/yyyy", nil
+func GetDateOfBirth(id string) (time.Time, error) {
+	if len(id) != 10 {
+		return time.Time{}, ErrChiLength
+	}
+	_, err := strconv.Atoi(id)
+
+	if err != nil {
+		return time.Time{}, ErrChiNonDigits
+	}
+
+	// DD/MM/YY
+	dateStr := id[0:2] + "/" + id[2:4] + "/" + id[4:6]
+	fmt.Println(dateStr)
+
+	date, err := time.Parse("02/01/06", dateStr)
+
+	if err != nil {
+		return time.Time{}, ErrChiInvalidDate
+	}
+	return date, nil
 }
