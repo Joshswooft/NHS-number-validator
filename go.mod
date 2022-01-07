@@ -1,3 +1,3 @@
-module github.com/Joshswooft/NHS-number-validator
+module github.com/Joshswooft/nhs
 
 go 1.16

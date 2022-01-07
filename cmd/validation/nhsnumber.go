@@ -3,6 +3,8 @@ package validation
 import (
 	"errors"
 	"strconv"
+
+	"github.com/Joshswooft/nhs/cmd/validation/utils"
 )
 
 // NhsNumberValidator checks whether the id is a valid NHS number.
@@ -34,45 +36,11 @@ func NhsNumberValidator(id string) error {
 		return err
 	}
 
-	// Step1: multiply each of the first 9 numbers by 11-index.
-	factors, checkDigit := multiplyByWeightingFactor(id)
+	validCheckSum := utils.Checksum(id)
 
-	// Step2: Add together
-	total := 0
-	for _, f := range factors {
-		total += f
-	}
-
-	// Step3: Divide by 11 and check remainder against check digit
-
-	remainder := total % 11
-
-	expectedCheckDigit := 11 - remainder
-
-	if expectedCheckDigit == 11 {
-		expectedCheckDigit = 0
-	}
-
-	if checkDigit != expectedCheckDigit {
+	if !validCheckSum {
 		return errors.New("nhs number is invalid")
 	}
 
 	return nil
-}
-
-// multiplyByWeightingFactor - multiplies each of the first 9 numbers by 11 - index. (where index starts from 1)
-// returns a 9 length array of ints and the check digit used for validity.
-func multiplyByWeightingFactor(id string) (factors []int, checkDigit int) {
-	digits := id[0:9]
-	d := rune(id[9] - '0')
-	checkDigit = int(d)
-
-	factors = make([]int, len(digits))
-	for i, r := range digits {
-		// index starts from 0 in go
-		weightingFactor := 11 - (i + 1)
-		digit := int(r - '0')
-		factors[i] = digit * weightingFactor
-	}
-	return
 }
